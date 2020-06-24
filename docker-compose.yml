@@ -1,0 +1,17 @@
+version: "2"
+
+services:
+  api:
+    build:
+      context: ./api
+    ports:
+      - "80:5000"
+      - "443:443"
+    volumes:
+      - ./api:/backend-api
+    networks:
+      - backend
+
+networks:
+  backend:
+    driver: bridge

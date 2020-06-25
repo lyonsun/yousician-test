@@ -1,3 +1,9 @@
+.vscode
+
+.env
+
 /env
 
 __pycache__
+
+db/data

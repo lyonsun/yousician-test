@@ -9,6 +9,31 @@ services:
       - "443:443"
     volumes:
       - ./api:/backend-api
+    links:
+      - mongodb
+    networks:
+      - backend
+
+  mongodb:
+    image: mongo
+    restart: always
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_PASSWORD}
+      MONGO_INITDB_DATABASE: ${MONGO_DBNAME}
+    ports:
+      - "27017:27017"
+    networks:
+      - backend
+
+  db_seed:
+    build: ./db-seed
+    environment:
+      - MONGO_USERNAME=${MONGO_USERNAME}
+      - MONGO_PASSWORD=${MONGO_PASSWORD}
+      - MONGO_DBNAME=${MONGO_DBNAME}
+    links:
+      - mongodb
     networks:
       - backend
 

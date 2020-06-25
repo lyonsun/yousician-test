@@ -3,6 +3,7 @@ FROM python:3
 WORKDIR /backend-api
 
 ENV FLASK_APP app.py
+ENV FLASK_ENV development
 ENV FLASK_RUN_HOST 0.0.0.0
 
 COPY requirements.txt requirements.txt

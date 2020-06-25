@@ -4,13 +4,32 @@
 
 1. [Install Docker Compose](https://docs.docker.com/engine/install/ubuntu/)
 
-2. Open your favorite terminal, cd into root folder of this code repository, and run:
+2. Clone this code repository onto your computer or any virtual machines in the cloud:
+
+   ```shellscript
+   git clone git@github.com:lyonsun/yousician-test.git
+   ```
+
+3. Cd into root folder of this code repository:
+
+   ```shellscript
+   cd yousician-test
+   ```
+
+4. Duplicate file `.env.sample` as `.env` in the same directory (Change credentials in `.env` file if needed). Also need to put a copy of `.env` file into the api folder (to be able to use these environment variables in the flask application).
+
+   ```shellscript
+   cp .env.sample .env
+   cp .env api/.env
+   ```
+
+5. Build all docker services and put the application up and running in the background:
 
    ```shellscript
    docker-compose up -d
    ```
 
-3. Open your favorite browser, and go to: [http://localhost](http://localhost)
+6. Open your favorite browser, and go to: [http://localhost](http://localhost)
 
 ## Endpoints
 

@@ -3,7 +3,7 @@ import json
 
 from bson import json_util, objectid
 
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, Response
 from flask_pymongo import MongoClient, ObjectId
 from dotenv import load_dotenv
 
@@ -19,7 +19,7 @@ db = client.music
 
 @app.route("/")
 def hello():
-    return {"Hello": "world"}
+    return Response('{"Hello": "world"}', status=200, mimetype="application/json")
 
 
 @app.route("/songs", methods=["GET"])
@@ -38,8 +38,8 @@ def get_all_songs():
         cursor = db.songs.find()
 
     # find songs
-    songs_collection = json.loads(json_util.dumps(cursor))
-    return jsonify(songs_collection)
+    songs_collection = json_util.dumps(cursor)
+    return Response(songs_collection, status=200, mimetype="application/json")
 
 
 @app.route("/songs/avg/difficulty", methods=["GET"])
@@ -65,8 +65,8 @@ def get_average_difficulty():
             }}
         ])
 
-    songs_collection = list(cursor)
-    return jsonify(songs_collection)
+    songs_collection = json_util.dumps(cursor)
+    return Response(songs_collection, status=200, mimetype="application/json")
 
 
 @app.route("/songs/search", methods=["GET"])
@@ -82,11 +82,11 @@ def search_songs():
         # find songs
         db.songs.create_index([("artist", "text"), ("title", "text")])
         cursor = db.songs.find({"$text": {"$search": message}})
-        songs_collection = json.loads(json_util.dumps(cursor))
+        songs_collection = json_util.dumps(cursor)
 
-        return jsonify(songs_collection)
+        return Response(songs_collection, status=200, mimetype="application/json")
     else:
-        return jsonify({"error": "missing parameter"})
+        return Response('{"error": "missing parameter"}', status=400, mimetype="application/json")
 
 
 @app.route("/songs/rating", methods=["POST"])
@@ -96,40 +96,44 @@ def search_songs():
 def rating():
     # check if request data is json
     if not request.json:
-        return jsonify({"error": "request is not sent via json"})
+        return Response(
+            '{"error": "request is not sent via json"}',
+            status=400,
+            mimetype="application/json"
+        )
 
     params = request.get_json(force=True)
 
     # check if song id is given
     if "song_id" not in params or "rating" not in params:
-        return jsonify({"error": "missing parameter"})
+        return Response('{"error": "missing parameter"}', status=400, mimetype="application/json")
 
     song_id = params["song_id"]
     rating = params["rating"]
 
     # check if song id is valid
     if objectid.ObjectId.is_valid(song_id) == False:
-        return jsonify({"error": "song id is not valid"})
+        return Response('{"error": "song id is not valid"}', status=400, mimetype="application/json")
 
     # check if rating is in correct range
     if rating < 1 or rating > 5:
-        return jsonify({"error": "rating should be between 1 and 5"})
+        return Response('{"error": "rating should be between 1 and 5"}', status=400, mimetype="application/json")
 
     # find the song
     song = json.loads(json_util.dumps(
         db.songs.find({"_id": ObjectId(song_id)})))
     if not song:
-        return jsonify({"error": "song is not found"})
+        return Response('{"error": "song is not found"}', status=404, mimetype="application/json")
 
     # update song with rating
     inserted_id = db.ratings.insert_one(
         {"song_id": song_id, "rating": rating}).inserted_id
 
     # get the rating
-    rating = json.loads(json_util.dumps(
-        db.ratings.find({"_id": inserted_id})))
+    rating = json_util.dumps(
+        db.ratings.find({"_id": inserted_id}))
 
-    return jsonify(rating)
+    return Response(rating, status=201, mimetype="application/json")
 
 
 @app.route("/songs/avg/rating/<song_id>", methods=["GET"])
@@ -138,13 +142,13 @@ def rating():
 def get_ratings(song_id):
     # check if song id is valid
     if objectid.ObjectId.is_valid(song_id) == False:
-        return jsonify({"error": "song id is not valid"})
+        return Response('{"error": "song id is not valid"}', status=400, mimetype="application/json")
 
     # find the song
     song = json.loads(json_util.dumps(
         db.songs.find({"_id": ObjectId(song_id)})))
     if not song:
-        return jsonify({"error": "song is not found"})
+        return Response('{"error": "song is not found"}', status=404, mimetype="application/json")
 
     # get result
     cursor = db.ratings.aggregate([
@@ -156,12 +160,12 @@ def get_ratings(song_id):
             "lowest": {"$min": "$rating"}
         }}
     ])
-    ratings = list(cursor)
+    ratings = json_util.dumps(cursor)
 
-    if not ratings:
-        return jsonify({"error": "no ratings for this song"})
+    if not json.loads(ratings):
+        return Response('{"error": "no ratings for this song"}', status=404, mimetype="application/json")
 
-    return jsonify(ratings)
+    return Response(ratings, status=200, mimetype="application/json")
 
 
 if __name__ == "__main__":

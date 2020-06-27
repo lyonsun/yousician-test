@@ -31,6 +31,35 @@
 
 6. Open your favorite browser, and go to: [http://localhost](http://localhost)
 
+## How to test
+
+1. Modify `MONGO_DBNAME=music` to `MONGO_DBNAME=music-test` in `api/.env` file. !!!**IMPORTAT**!!!
+
+2. Open another terminal, and run the following command:
+
+   ```shellscript
+   docker exec -it yousician-test-api pytest tests.py
+   ```
+
+   or:
+
+   ```shellscript
+   docker exec -it yousician-test-api python -m unittest tests.py
+   ```
+
+3. You should see something similiar to this:
+
+   ```shellscript
+   ====================================================================== test session starts ======================================================================
+   platform linux -- Python 3.7.3, pytest-5.4.3, py-1.9.0, pluggy-0.13.1
+   rootdir: /backend-api
+   collected 7 items
+
+   tests.py .......                                                                                                                                          [100%]
+
+   ======================================================================= 7 passed in 0.47s =======================================================================
+   ```
+
 ## Endpoints
 
 - GET /songs

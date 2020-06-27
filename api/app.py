@@ -1,20 +1,21 @@
 import os
 import json
+import logging
 
 from bson import json_util, objectid
 
 from flask import Flask, jsonify, request, Response
-from flask_pymongo import MongoClient, ObjectId
+from flask_pymongo import PyMongo, ObjectId
 from dotenv import load_dotenv
 
 load_dotenv()
 
 app = Flask(__name__)
 
-mongo_uri = "mongodb://{}:{}@mongodb:27017/?authSource=admin".format(
-    os.getenv("MONGO_USERNAME"), os.getenv("MONGO_PASSWORD"))
-client = MongoClient(mongo_uri)
-db = client.music
+app.config["MONGO_URI"] = "mongodb://{}:{}@mongodb:27017/{}?authSource=admin".format(
+    os.getenv("MONGO_USERNAME"), os.getenv("MONGO_PASSWORD"), os.getenv("MONGO_DBNAME"))
+mongo = PyMongo(app)
+db = mongo.db
 
 
 @app.route("/")
@@ -35,6 +36,7 @@ def get_all_songs():
 
         cursor = db.songs.find().skip(offset).limit(int(per_page))
     else:
+        print(os.getenv("MONGO_DBNAME"), flush=True)
         cursor = db.songs.find()
 
     # find songs
@@ -104,7 +106,7 @@ def rating():
 
     params = request.get_json(force=True)
 
-    # check if song id is given
+    # check if required parameters are given
     if "song_id" not in params or "rating" not in params:
         return Response('{"error": "missing parameter"}', status=400, mimetype="application/json")
 

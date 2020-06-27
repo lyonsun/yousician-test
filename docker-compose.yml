@@ -2,6 +2,7 @@ version: "2"
 
 services:
   api:
+    container_name: "yousician-test-api"
     build:
       context: ./api
     ports:
@@ -15,6 +16,7 @@ services:
       - backend
 
   mongodb:
+    container_name: "yousician-test-mongodb"
     image: mongo
     restart: always
     environment:

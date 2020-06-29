@@ -2,7 +2,7 @@
 
 ## How to run
 
-1. [Install Docker Compose](https://docs.docker.com/engine/install/ubuntu/)
+1. Install both [Docker Engine](https://docs.docker.com/get-docker/) and [Docker Compose](https://docs.docker.com/engine/install/ubuntu/).
 
 2. Clone this code repository onto your computer or any virtual machines in the cloud:
 
@@ -28,7 +28,7 @@
    docker-compose up -d
    ```
 
-6. Open your favorite browser, and go to: [http://localhost](http://localhost)
+6. Open your favorite browser, and go to: [http://localhost](http://localhost).
 
 7. Use curl or Postman or any other rest clients you perfer to test the APIs. Endpoints can be found further down in this documentation.
 
@@ -64,6 +64,46 @@
 
    ======================================== 18 passed in 0.87s =========================================
    ```
+
+## When it is time to scale
+
+1. Install and Set Up [kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl/#install-kubectl-on-linux).
+
+2. Install [Minikube](https://kubernetes.io/docs/tasks/tools/install-minikube/).
+
+3. Start minikube at first:
+
+   ```shellscript
+   minikube start --driver=docker
+   ```
+
+4. If you have made any changes to the database credentials in both `.env` file, you should apply the same to the following files:
+
+   ```shellscript
+   k8s/db-seed-deployment.yaml
+   k8s/mongodb-deployment.yaml
+   ```
+
+5. You may also want to change replicas settings in the following two files as well:
+
+   ```shellscript
+   k8s/api-deployment.yaml
+   k8s/mongodb-deployment.yaml
+   ```
+
+6. Be sure we live now in the root directory of this repository, and run:
+
+   ```shellscript
+   kubectl create -f kompose
+   ```
+
+7. Run the following command to access the API services:
+
+   ```shellscript
+   minikube service api
+   ```
+
+8. The API web application would be automactically opened in your default browser. With the URL shown in the browser, you can now use one of your favorite rest clients to test the APIs.
 
 ## Endpoints
 

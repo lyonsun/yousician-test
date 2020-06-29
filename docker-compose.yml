@@ -1,15 +1,14 @@
-version: "2"
+version: "3"
 
 services:
   api:
     container_name: "yousician-test-api"
     build:
       context: ./api
+    image: lyonsun/yousician-test-api
     ports:
       - "80:5000"
       - "443:443"
-    volumes:
-      - ./api:/backend-api
     links:
       - mongodb
     networks:
@@ -28,8 +27,9 @@ services:
     networks:
       - backend
 
-  db_seed:
+  db-seed:
     build: ./db-seed
+    image: lyonsun/yousician-test-db-seed
     environment:
       - MONGO_USERNAME=${MONGO_USERNAME}
       - MONGO_PASSWORD=${MONGO_PASSWORD}

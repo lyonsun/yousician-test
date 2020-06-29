@@ -1,6 +1,5 @@
 import os
 import json
-import logging
 
 from bson import json_util, objectid
 
@@ -36,7 +35,6 @@ def get_all_songs():
 
         cursor = db.songs.find().skip(offset).limit(int(per_page))
     else:
-        print(os.getenv("MONGO_DBNAME"), flush=True)
         cursor = db.songs.find()
 
     # find songs

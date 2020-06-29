@@ -38,26 +38,32 @@
 2. Open another terminal, and run the following command:
 
    ```shellscript
-   docker exec -it yousician-test-api pytest tests.py
+   docker exec -it yousician-test-api pytest tests
    ```
 
    or:
 
    ```shellscript
-   docker exec -it yousician-test-api python -m unittest tests.py
+   docker exec -it yousician-test-api python -m unittest tests
    ```
 
 3. You should see something similiar to this:
 
    ```shellscript
-   ====================================================================== test session starts ======================================================================
+   ======================================== test session starts ========================================
    platform linux -- Python 3.7.3, pytest-5.4.3, py-1.9.0, pluggy-0.13.1
    rootdir: /backend-api
-   collected 7 items
+   collected 18 items
 
-   tests.py .......                                                                                                                                          [100%]
+   tests/test_empty_database.py .                                                                [  5%]
+   tests/test_get_all_songs.py ..                                                                [ 16%]
+   tests/test_get_average_difficulty.py ..                                                       [ 27%]
+   tests/test_get_ratings.py ....                                                                [ 50%]
+   tests/test_hello.py .                                                                         [ 55%]
+   tests/test_rating.py ......                                                                   [ 88%]
+   tests/test_search_songs.py ..                                                                 [100%]
 
-   ======================================================================= 7 passed in 0.47s =======================================================================
+   ======================================== 18 passed in 0.87s =========================================
    ```
 
 ## Endpoints

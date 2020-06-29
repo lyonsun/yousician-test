@@ -1,6 +1,6 @@
 FROM mongo
 
-LABEL developer="Liang Sun <sunly917@gmail.com>"
+LABEL maintainer="Liang Sun <sunly917@gmail.com>"
 
 COPY songs.json /songs.json
 

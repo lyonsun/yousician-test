@@ -1,5 +1,7 @@
 FROM python:3
 
+LABEL maintainer="Liang Sun <sunly917@gmail.com>"
+
 WORKDIR /backend-api
 
 ENV FLASK_APP app.py

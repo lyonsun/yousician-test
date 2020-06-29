@@ -1,13 +1,15 @@
 import unittest
 
-from app import app, db
+from app import create_app
+from db import mongo
 
 
 class BaseTestCase(unittest.TestCase):
 
     def setUp(self):
-        self.app = app.test_client()
-        self.db = db
+        self.app = create_app(config_name="testing")
+        self.client = self.app.test_client()
+        self.db = mongo.db
 
     def createSongs(self):
         sample_data = [

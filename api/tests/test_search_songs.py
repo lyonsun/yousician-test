@@ -13,7 +13,7 @@ class TestSearchSongs(BaseTestCase):
         # init database
         self.createSongs()
 
-        response = self.app.get(
+        response = self.client.get(
             "/songs/search", headers={"Content-Type": "application/json"})
 
         # result
@@ -31,7 +31,7 @@ class TestSearchSongs(BaseTestCase):
         # init database
         self.createSongs()
 
-        response = self.app.get(
+        response = self.client.get(
             "/songs/search?message=yousician", headers={"Content-Type": "application/json"})
 
         # result

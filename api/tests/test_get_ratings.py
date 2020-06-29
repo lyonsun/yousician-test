@@ -14,8 +14,8 @@ class TestGetRatings(BaseTestCase):
     def test_get_ratings_with_invalid_song_id(self):
         # init database
         self.createSongs()
-        response = self.app.get("/songs/avg/rating/x",
-                                content_type="application/json")
+        response = self.client.get("/songs/avg/rating/x",
+                                   content_type="application/json")
 
         # result
         want = "song id is not valid"
@@ -32,7 +32,7 @@ class TestGetRatings(BaseTestCase):
         # init database
         self.createSongs()
 
-        response = self.app.get(
+        response = self.client.get(
             "/songs/avg/rating/5ef63cc331a5cd25e9971b4e", content_type="application/json")
 
         # result
@@ -53,7 +53,7 @@ class TestGetRatings(BaseTestCase):
         # get one song for testing
         song = self.db.songs.find_one({"title": "Awaki-Waki"})
 
-        response = self.app.get(
+        response = self.client.get(
             "/songs/avg/rating/{}".format(str(song["_id"])), content_type="application/json")
 
         # result
@@ -82,7 +82,7 @@ class TestGetRatings(BaseTestCase):
             {"song_id": str(song["_id"]), "rating": 5},
         ])
 
-        response = self.app.get(
+        response = self.client.get(
             "/songs/avg/rating/{}".format(str(song["_id"])), content_type="application/json")
 
         rating = next(iter(json.loads(response.data)))

@@ -9,7 +9,7 @@ class TestHello(BaseTestCase):
 
     def testHello(self):
         # request
-        response = self.app.get(
+        response = self.client.get(
             "/", headers={"Content-Type": "application/json"})
 
         # result

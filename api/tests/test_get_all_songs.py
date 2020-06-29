@@ -12,7 +12,7 @@ class TestGetAllSongs(BaseTestCase):
     def test_get_all_songs(self):
         # init database
         self.createSongs()
-        response = self.app.get(
+        response = self.client.get(
             "/songs", headers={"Content-Type": "application/json"})
 
         # result
@@ -30,7 +30,7 @@ class TestGetAllSongs(BaseTestCase):
         # init database
         self.createSongs()
 
-        response = self.app.get(
+        response = self.client.get(
             "/songs?page=2&per_page=2", headers={"Content-Type": "application/json"})
 
         # result

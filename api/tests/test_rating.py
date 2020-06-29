@@ -18,7 +18,7 @@ class TestRating(BaseTestCase):
         # get one song for testing
         song = self.db.songs.find_one({"title": "Awaki-Waki"})
 
-        response = self.app.post(
+        response = self.client.post(
             "/songs/rating", content_type="form-data", data={"song_id": song["_id"], "rating": 4})
 
         # result
@@ -36,7 +36,7 @@ class TestRating(BaseTestCase):
         # init database
         self.createSongs()
 
-        response = self.app.post(
+        response = self.client.post(
             "/songs/rating", content_type="application/json", data=json.dumps({"x": "x"}))
 
         # result
@@ -54,7 +54,7 @@ class TestRating(BaseTestCase):
         # init database
         self.createSongs()
 
-        response = self.app.post(
+        response = self.client.post(
             "/songs/rating", content_type="application/json",
             data=json.dumps({"song_id": "x", "rating": 4}))
 
@@ -76,7 +76,7 @@ class TestRating(BaseTestCase):
         # get one song for testing
         song = self.db.songs.find_one({"title": "Awaki-Waki"})
 
-        response = self.app.post(
+        response = self.client.post(
             "/songs/rating", content_type="application/json",
             data=json.dumps({"song_id": str(song["_id"]), "rating": 40}))
 
@@ -95,7 +95,7 @@ class TestRating(BaseTestCase):
         # init database
         self.createSongs()
 
-        response = self.app.post(
+        response = self.client.post(
             "/songs/rating", content_type="application/json",
             data=json.dumps({"song_id": "555555555555555555555555", "rating": 4}))
 
@@ -117,7 +117,7 @@ class TestRating(BaseTestCase):
         # get one song for testing
         song = self.db.songs.find_one({"title": "Awaki-Waki"})
 
-        response = self.app.post(
+        response = self.client.post(
             "/songs/rating", content_type="application/json",
             data=json.dumps({"song_id": str(song["_id"]), "rating": 4}))
 

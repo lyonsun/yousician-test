@@ -16,11 +16,10 @@
    cd yousician-test
    ```
 
-4. Duplicate file `.env.sample` as `.env` in the same directory (Change credentials in `.env` file if needed). Also need to put a copy of `.env` file into the api folder (to be able to use these environment variables in the flask application).
+4. Duplicate file `.env.sample` as `.env` in the same directory (Change credentials in `.env` file if needed). Cd into api folder and do the same thing (Remeber to cd back afterwards for future actions).
 
    ```shellscript
    cp .env.sample .env
-   cp .env api/.env
    ```
 
 5. Build all docker services and put the application up and running in the background:
@@ -31,11 +30,11 @@
 
 6. Open your favorite browser, and go to: [http://localhost](http://localhost)
 
+7. Use curl or Postman or any other rest clients you perfer to test the APIs. Endpoints can be found further down in this documentation.
+
 ## How to test
 
-1. Modify `MONGO_DBNAME=music` to `MONGO_DBNAME=music-test` in `api/.env` file. !!!**IMPORTAT**!!!
-
-2. Open another terminal, and run the following command:
+1. Open another terminal, and run the following command:
 
    ```shellscript
    docker exec -it yousician-test-api pytest tests
@@ -47,7 +46,7 @@
    docker exec -it yousician-test-api python -m unittest tests
    ```
 
-3. You should see something similiar to this:
+2. You should see something similiar to this:
 
    ```shellscript
    ======================================== test session starts ========================================

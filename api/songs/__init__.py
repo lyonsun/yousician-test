@@ -1,28 +1,20 @@
-import os
 import json
-
 from bson import json_util, objectid
 
-from flask import Flask, jsonify, request, Response
-from flask_pymongo import PyMongo, ObjectId
-from dotenv import load_dotenv
+from flask import Blueprint, request, Response
+from flask_pymongo import ObjectId
 
-load_dotenv()
+from db import mongo
 
-app = Flask(__name__)
-
-app.config["MONGO_URI"] = "mongodb://{}:{}@mongodb:27017/{}?authSource=admin".format(
-    os.getenv("MONGO_USERNAME"), os.getenv("MONGO_PASSWORD"), os.getenv("MONGO_DBNAME"))
-mongo = PyMongo(app)
-db = mongo.db
+songs = Blueprint('songs', __name__)
 
 
-@app.route("/")
+@songs.route("/")
 def hello():
     return Response('{"Hello": "world"}', status=200, mimetype="application/json")
 
 
-@app.route("/songs", methods=["GET"])
+@songs.route("/songs", methods=["GET"])
 # - GET /songs
 #   - Returns a list of songs with some details on them
 #   - Add possibility to paginate songs.
@@ -33,16 +25,16 @@ def get_all_songs():
         per_page = request.args.get("per_page")
         offset = ((int(page) - 1) * int(per_page)) if int(page) > 0 else 0
 
-        cursor = db.songs.find().skip(offset).limit(int(per_page))
+        cursor = mongo.db.songs.find().skip(offset).limit(int(per_page))
     else:
-        cursor = db.songs.find()
+        cursor = mongo.db.songs.find()
 
     # find songs
     songs_collection = json_util.dumps(cursor)
     return Response(songs_collection, status=200, mimetype="application/json")
 
 
-@app.route("/songs/avg/difficulty", methods=["GET"])
+@songs.route("/songs/avg/difficulty", methods=["GET"])
 # - GET /songs/avg/difficulty
 #   - Takes an optional parameter "level" to select only songs from a specific level.
 #   - Returns the average difficulty for all songs.
@@ -50,7 +42,7 @@ def get_average_difficulty():
     # check if optional parameter is given, query with or without optional parameter condition
     if "level" in request.args:
         level = int(request.args.get("level"))
-        cursor = db.songs.aggregate([
+        cursor = mongo.db.songs.aggregate([
             {"$match": {"level": level}},
             {"$group": {
                 "_id": None,
@@ -58,7 +50,7 @@ def get_average_difficulty():
             }}
         ])
     else:
-        cursor = db.songs.aggregate([
+        cursor = mongo.db.songs.aggregate([
             {"$group": {
                 "_id": None,
                 "average_difficulty": {"$avg": "$difficulty"}
@@ -69,7 +61,7 @@ def get_average_difficulty():
     return Response(songs_collection, status=200, mimetype="application/json")
 
 
-@app.route("/songs/search", methods=["GET"])
+@songs.route("/songs/search", methods=["GET"])
 # - GET /songs/search
 #   - Takes in parameter a "message" string to search.
 #   - Return a list of songs. The search should take into account song"s artist and title.
@@ -80,8 +72,8 @@ def search_songs():
         message = request.args.get("message")
 
         # find songs
-        db.songs.create_index([("artist", "text"), ("title", "text")])
-        cursor = db.songs.find({"$text": {"$search": message}})
+        mongo.db.songs.create_index([("artist", "text"), ("title", "text")])
+        cursor = mongo.db.songs.find({"$text": {"$search": message}})
         songs_collection = json_util.dumps(cursor)
 
         return Response(songs_collection, status=200, mimetype="application/json")
@@ -89,7 +81,7 @@ def search_songs():
         return Response('{"error": "missing parameter"}', status=400, mimetype="application/json")
 
 
-@app.route("/songs/rating", methods=["POST"])
+@songs.route("/songs/rating", methods=["POST"])
 # - POST /songs/rating
 #   - Takes in parameter a "song_id" and a "rating"
 #   - This call adds a rating to the song. Ratings should be between 1 and 5.
@@ -121,22 +113,22 @@ def rating():
 
     # find the song
     song = json.loads(json_util.dumps(
-        db.songs.find({"_id": ObjectId(song_id)})))
+        mongo.db.songs.find({"_id": ObjectId(song_id)})))
     if not song:
         return Response('{"error": "song is not found"}', status=404, mimetype="application/json")
 
     # update song with rating
-    inserted_id = db.ratings.insert_one(
+    inserted_id = mongo.db.ratings.insert_one(
         {"song_id": song_id, "rating": rating}).inserted_id
 
     # get the rating
     rating = json_util.dumps(
-        db.ratings.find({"_id": inserted_id}))
+        mongo.db.ratings.find({"_id": inserted_id}))
 
     return Response(rating, status=201, mimetype="application/json")
 
 
-@app.route("/songs/avg/rating/<song_id>", methods=["GET"])
+@songs.route("/songs/avg/rating/<song_id>", methods=["GET"])
 # - GET /songs/avg/rating/<song_id>
 #   - Returns the average, the lowest and the highest rating of the given song id.
 def get_ratings(song_id):
@@ -146,12 +138,12 @@ def get_ratings(song_id):
 
     # find the song
     song = json.loads(json_util.dumps(
-        db.songs.find({"_id": ObjectId(song_id)})))
+        mongo.db.songs.find({"_id": ObjectId(song_id)})))
     if not song:
         return Response('{"error": "song is not found"}', status=404, mimetype="application/json")
 
     # get result
-    cursor = db.ratings.aggregate([
+    cursor = mongo.db.ratings.aggregate([
         {"$match": {"song_id": song_id}},
         {"$group": {
             "_id": None,
@@ -166,7 +158,3 @@ def get_ratings(song_id):
         return Response('{"error": "no ratings for this song"}', status=404, mimetype="application/json")
 
     return Response(ratings, status=200, mimetype="application/json")
-
-
-if __name__ == "__main__":
-    app.run()

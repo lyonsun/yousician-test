@@ -13,8 +13,8 @@ class TestGetAverageDifficulty(BaseTestCase):
         # init database
         self.createSongs()
 
-        response = self.app.get("/songs/avg/difficulty",
-                                headers={"Content-Type": "application/json"})
+        response = self.client.get("/songs/avg/difficulty",
+                                   headers={"Content-Type": "application/json"})
 
         # result
         want = (14.6+9.1+15)/3
@@ -31,8 +31,8 @@ class TestGetAverageDifficulty(BaseTestCase):
         # init database
         self.createSongs()
 
-        response = self.app.get("/songs/avg/difficulty?level=13",
-                                headers={"Content-Type": "application/json"})
+        response = self.client.get("/songs/avg/difficulty?level=13",
+                                   headers={"Content-Type": "application/json"})
 
         # result
         want = (14.6+15)/2

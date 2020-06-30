@@ -2,7 +2,7 @@
 
 ## How to run
 
-1. Install both [Docker Engine](https://docs.docker.com/get-docker/) and [Docker Compose](https://docs.docker.com/engine/install/ubuntu/).
+1. Install both [Docker Engine](https://docs.docker.com/get-docker/) and [Docker Compose](https://docs.docker.com/compose/install/).
 
 2. Clone this code repository onto your computer or any virtual machines in the cloud:
 
@@ -94,7 +94,7 @@
 6. Be sure we live now in the root directory of this repository, and run:
 
    ```shellscript
-   kubectl create -f kompose
+   kubectl create -f k8s
    ```
 
 7. Run the following command to access the API services:
